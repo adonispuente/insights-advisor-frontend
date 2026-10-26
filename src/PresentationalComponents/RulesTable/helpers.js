@@ -370,7 +370,11 @@ export const buildRows = (
               {envContext.loadChromeless ? (
                 <Link
                   key={key}
-                  to={`/foreman_rh_cloud/recommendations/${value.rule_id}`}
+                  to={
+                    process.env.IOP === 'true'
+                      ? `/recommendations/${value.rule_id}`
+                      : `/foreman_rh_cloud/recommendations/${value.rule_id}`
+                  }
                 >
                   {' '}
                   {value.description}{' '}
@@ -426,7 +430,11 @@ export const buildRows = (
             ) : envContext.loadChromeless ? (
               <Link
                 key={key}
-                to={`/foreman_rh_cloud/recommendations/${value.rule_id}`}
+                to={
+                  process.env.IOP === 'true'
+                    ? `/recommendations/${value.rule_id}`
+                    : `/foreman_rh_cloud/recommendations/${value.rule_id}`
+                }
               >
                 {`${value.impacted_systems_count.toLocaleString()}`}
               </Link>
@@ -501,7 +509,11 @@ export const buildRows = (
                     value.rule_status === 'enabled' &&
                     (envContext.loadChromeless ? (
                       <Link
-                        to={`/foreman_rh_cloud/recommendations/${value.rule_id}`}
+                        to={
+                          process.env.IOP === 'true'
+                            ? `/recommendations/${value.rule_id}`
+                            : `/foreman_rh_cloud/recommendations/${value.rule_id}`
+                        }
                       >
                         {value.impacted_systems_count === 0
                           ? ''

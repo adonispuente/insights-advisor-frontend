@@ -336,7 +336,8 @@ const Inventory = ({
         ...(rule
           ? {
               renderFunc: (name, id) => {
-                return envContext.loadChromeless ? (
+                return envContext.loadChromeless &&
+                  process.env.IOP !== 'true' ? (
                   <Link to={`/new/hosts/${name}/#Overview`}>{name}</Link>
                 ) : (
                   <InsightsLink
@@ -452,7 +453,7 @@ const Inventory = ({
             iopData={resolutions}
             isDisabled={isRemediationButtonDisabled}
           />
-        ) : (
+        ) : !envContext.changeRemediationButtonForIop ? (
           <RemediationButton
             key="remediation-button"
             fallback={<Spinner size="md" />}
@@ -463,7 +464,7 @@ const Inventory = ({
           >
             Plan remediation
           </RemediationButton>
-        )}
+        ) : null}
         {envContext.displayDownloadPlaybookButton && (
           <DownloadPlaybookButton
             isDisabled={isRemediationButtonDisabled}

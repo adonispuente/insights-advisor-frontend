@@ -51,6 +51,9 @@ const HybridInventory = ({
       fallback={<div />}
       columns
       hasConventionalSystems={conventionalSystemsCount > 0}
+      // Inventory defaults this to true and redirects empty recommendations to
+      // its Edge tab. IoP has no Edge routes or backend.
+      accountHasEdgeImages={process.env.IOP === 'true' ? false : undefined}
     />
   );
 };

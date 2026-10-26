@@ -171,7 +171,7 @@ const BaseSystemAdvisor = ({
                 iopData={resolutions}
                 isDisabled={selectedAnsibleRules.length === 0}
               />
-            ) : (
+            ) : !envContext.changeRemediationButtonForIop ? (
               <RemediationButton
                 key="remediation-button"
                 fallback={<Spinner size="md" />}
@@ -182,7 +182,7 @@ const BaseSystemAdvisor = ({
               >
                 Plan remediation
               </RemediationButton>
-            )}
+            ) : null}
             {envContext.displayDownloadPlaybookButton && (
               <DownloadPlaybookButton
                 isDisabled={selectedAnsibleRules.length === 0}

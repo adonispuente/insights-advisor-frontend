@@ -1,6 +1,7 @@
 import React, { lazy } from 'react';
 import { Route, Routes, Navigate } from 'react-router-dom';
 import { ZeroStateWrapper } from './ZeroStateWrapper';
+import IopAdvisorRoutes from './iop/AdvisorRoutes';
 
 const RecsList = lazy(
   () =>
@@ -47,6 +48,7 @@ const AdminProtectedRoute = lazy(
 );
 
 export const AdvisorRoutes = () => {
+  if (process.env.IOP === 'true') return <IopAdvisorRoutes />;
   return (
     <ZeroStateWrapper>
       <Routes>

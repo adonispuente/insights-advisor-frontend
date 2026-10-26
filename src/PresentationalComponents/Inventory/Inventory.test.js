@@ -1,6 +1,6 @@
 import React from 'react';
 import '@testing-library/jest-dom';
-import { render, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import configureStore from 'redux-mock-store';
 import Inventory from './Inventory';
 import { ComponentWithContext } from '../../Utilities/TestingUtilities';
@@ -8,9 +8,22 @@ import { ComponentWithContext } from '../../Utilities/TestingUtilities';
 const mockAxiosGet = jest.fn();
 const mockAddNotification = jest.fn();
 
-const MockInventoryTable = jest.fn(({ children }) => (
-  <div data-testid="inventory-table">{children}</div>
+const MockInventoryTable = jest.fn(({ children, actionsConfig }) => (
+  <div data-testid="inventory-table">
+    {actionsConfig?.actions?.filter(React.isValidElement)}
+    {children}
+  </div>
 ));
+
+jest.mock('@redhat-cloud-services/frontend-components/AsyncComponent', () => ({
+  __esModule: true,
+  default: (...args) => MockInventoryTable(...args),
+}));
+
+jest.mock('../../Utilities/DownloadPlaybookButton', () => ({
+  __esModule: true,
+  default: () => <button>Download Playbook</button>,
+}));
 
 jest.mock('@redhat-cloud-services/frontend-components/Inventory', () => ({
   InventoryTable: (...args) => MockInventoryTable(...args),
@@ -79,6 +92,53 @@ const renderInventory = (props = {}, contextValue = {}) => {
 describe('Inventory - Playbook Count Scenarios', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+  });
+
+  describe('remediation controls', () => {
+    beforeEach(() => {
+      mockAxiosGet.mockResolvedValue({ playbook_count: 0 });
+    });
+
+    it('does not mount the cloud remote in an IoP iframe without a Foreman modal', () => {
+      renderInventory(
+        {},
+        {
+          loadChromeless: true,
+          changeRemediationButtonForIop: true,
+          displayDownloadPlaybookButton: true,
+        },
+      );
+      expect(
+        screen.queryByTestId('remediation-button'),
+      ).not.toBeInTheDocument();
+      expect(
+        screen.getByRole('button', { name: 'Download Playbook' }),
+      ).toBeInTheDocument();
+    });
+
+    it('keeps the cloud remediation control in HCC', () => {
+      renderInventory();
+      expect(screen.getByTestId('remediation-button')).toBeInTheDocument();
+    });
+
+    it('uses an injected Foreman modal when available', () => {
+      const modal = {
+        WrappedComponent: () => <button>Foreman remediation</button>,
+      };
+      renderInventory(
+        { IopRemediationModal: modal },
+        {
+          loadChromeless: true,
+          changeRemediationButtonForIop: true,
+        },
+      );
+      expect(
+        screen.getByRole('button', { name: 'Foreman remediation' }),
+      ).toBeInTheDocument();
+      expect(
+        screen.queryByTestId('remediation-button'),
+      ).not.toBeInTheDocument();
+    });
   });
 
   describe('rulesCheck() - API fetch behavior', () => {

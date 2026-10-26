@@ -8,7 +8,11 @@ import OutageAlert from './PresentationalComponents/OutageAlert/OutageAlert';
 import { AdvisorRoutes } from './Routes';
 import messages from './Messages';
 import { useIntl } from 'react-intl';
-import { useHccEnvironmentContext, useFeatureFlag } from './Utilities/Hooks';
+import {
+  useHccEnvironmentContext,
+  useIopEnvironmentContext,
+  useFeatureFlag,
+} from './Utilities/Hooks';
 import { useKesselEnvironmentContext } from './Utilities/useKesselEnvironmentContext';
 import { LockIcon } from '@patternfly/react-icons';
 import { AccessCheck } from '@project-kessel/react-kessel-access-check';
@@ -82,6 +86,16 @@ const App = () => {
  */
 const AppWithRbacV1Context = () => {
   const envContext = useHccEnvironmentContext();
+  return (
+    <EnvironmentContext.Provider value={envContext}>
+      <App />
+    </EnvironmentContext.Provider>
+  );
+};
+
+// IoP receives permissions from Foreman, not the HCC Kessel service.
+export const AppWithIopContext = () => {
+  const envContext = useIopEnvironmentContext();
   return (
     <EnvironmentContext.Provider value={envContext}>
       <App />

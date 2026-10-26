@@ -83,7 +83,13 @@ const RuleDetailsWrapper = ({ item }) => {
       ViewAffectedLink={
         rule.rule_status === 'enabled' &&
         (envContext?.loadChromeless ? (
-          <Link to={`/foreman_rh_cloud/recommendations/${rule.rule_id}`}>
+          <Link
+            to={
+              process.env.IOP === 'true'
+                ? `/recommendations/${rule.rule_id}`
+                : `/foreman_rh_cloud/recommendations/${rule.rule_id}`
+            }
+          >
             {rule.impacted_systems_count === 0
               ? ''
               : intl.formatMessage(messages.viewAffectedSystems, {

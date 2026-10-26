@@ -24,6 +24,16 @@ export const urlBuilder = (filters = {}) => {
   filters?.tags?.length
     ? params.set('tags', filters.tags)
     : params.delete('tags');
+  if (process.env.IOP === 'true') {
+    const pathname =
+      window.location.hash.slice(1).split('?')[0] || '/recommendations';
+    const nextUrl = `${url.origin}${url.pathname}${url.search}#${pathname}?${params.toString()}`;
+    if (window.location.href !== nextUrl) {
+      window.history.replaceState(null, '', nextUrl);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    }
+    return `?${queryString}`;
+  }
   window.history.replaceState(
     null,
     null,
@@ -108,7 +118,11 @@ export const filterFetchBuilder = (filters) => {
 
 // parses url params for use in table/filter chips
 export const paramParser = () => {
-  const searchParams = new URLSearchParams(window.location.search);
+  const searchParams = new URLSearchParams(
+    process.env.IOP === 'true'
+      ? window.location.hash.split('?')[1] || ''
+      : window.location.search,
+  );
   return Array.from(searchParams).reduce(
     (acc, [key, value]) => ({
       ...acc,
